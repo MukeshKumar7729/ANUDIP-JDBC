@@ -1,0 +1,16 @@
+--MYSQL(JDBC)
+CREATE DATABASE Infosys;
+
+USE Infosys;
+
+CREATE TABLE Employee (
+    eid INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    salary INT NOT NULL
+);
+
+INSERT INTO Employee (name, address, salary) VALUES
+('Ravi', 'Chennai', 45000),
+('Priya', 'Coimbatore', 52000),
+('Arun', 'Madurai', 48000);

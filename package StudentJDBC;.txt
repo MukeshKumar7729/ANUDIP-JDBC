@@ -1,0 +1,190 @@
+package JDBC;
+
+import java.sql.*;
+import java.util.Scanner;
+
+public class EmployeeJDBC {
+    static final String URL = "jdbc:mysql://localhost:3306/Infosys";
+    static final String USER = "root";
+    static final String PASS = "Mkks77129"; // 🔐 Replace with your MySQL password
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection(URL, USER, PASS);
+            System.out.println("✅ Connected to Infosys database.");
+
+            while (true) {
+                System.out.println("\n📋 MENU:");
+                System.out.println("1. Insert Employee");
+                System.out.println("2. View All Employees");
+                System.out.println("3. Update Employee Salary");
+                System.out.println("4. Delete Employee");
+                System.out.println("5. Exit");
+                System.out.print("Choose an option: ");
+                int choice = sc.nextInt();
+
+                switch (choice) {
+                    case 1 -> insertEmployee(con, sc);
+                    case 2 -> viewEmployees(con);
+                    case 3 -> updateEmployee(con, sc);
+                    case 4 -> deleteEmployee(con, sc);
+                    case 5 -> {
+                        con.close();
+                        System.out.println("👋 Connection closed. Exiting...");
+                        return;
+                    }
+                    default -> System.out.println("❌ Invalid choice. Try again.");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+
+    static void insertEmployee(Connection con, Scanner sc) throws SQLException {
+        System.out.print("Enter name: ");
+        sc.nextLine(); // consume newline
+        String name = sc.nextLine();
+        System.out.print("Enter address: ");
+        String address = sc.nextLine();
+        System.out.print("Enter salary: ");
+        int salary = sc.nextInt();
+
+        String query = "INSERT INTO Employee (name, address, salary) VALUES (?, ?, ?)";
+        PreparedStatement pst = con.prepareStatement(query);
+        pst.setString(1, name);
+        pst.setString(2, address);
+        pst.setInt(3, salary);
+        int rows = pst.executeUpdate();
+        System.out.println("✅ " + rows + " employee(s) inserted.");
+    }
+
+    static void viewEmployees(Connection con) throws SQLException {
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM Employee");
+        System.out.println("\n📊 Employee Table:");
+        while (rs.next()) {
+            System.out.println("ID: " + rs.getInt("eid") +
+                               ", Name: " + rs.getString("name") +
+                               ", Address: " + rs.getString("address") +
+                               ", Salary: " + rs.getInt("salary"));
+        }
+    }
+
+    static void updateEmployee(Connection con, Scanner sc) throws SQLException {
+        System.out.print("Enter Employee ID to update: ");
+        int eid = sc.nextInt();
+        System.out.print("Enter new salary: ");
+        int salary = sc.nextInt();
+
+        String query = "UPDATE Employee SET salary = ? WHERE eid = ?";
+        PreparedStatement pst = con.prepareStatement(query);
+        pst.setInt(1, salary);
+        pst.setInt(2, eid);
+        int rows = pst.executeUpdate();
+        System.out.println("✏️ " + rows + " employee(s) updated.");
+    }
+
+    static void deleteEmployee(Connection con, Scanner sc) throws SQLException {
+        System.out.print("Enter Employee ID to delete: ");
+        int eid = sc.nextInt();
+
+        String query = "DELETE FROM Employee WHERE eid = ?";
+        PreparedStatement pst = con.prepareStatement(query);
+        pst.setInt(1, eid);
+        int rows = pst.executeUpdate();
+        System.out.println("🗑️ " + rows + " employee(s) deleted.");
+    }
+}
+
+
+
+
+
+
+/*✅ Connected to Infosys database.
+
+📋 MENU:
+1. Insert Employee
+2. View All Employees
+3. Update Employee Salary
+4. Delete Employee
+5. Exit
+Choose an option: 1
+Enter name: kumar
+Enter address: salam
+Enter salary: 45
+✅ 1 employee(s) inserted.
+
+📋 MENU:
+1. Insert Employee
+2. View All Employees
+3. Update Employee Salary
+4. Delete Employee
+5. Exit
+Choose an option: 2
+
+📊 Employee Table:
+ID: 1, Name: Ravi, Address: Chennai, Salary: 45000
+ID: 2, Name: Priya, Address: Coimbatore, Salary: 52000
+ID: 3, Name: Arun, Address: Madurai, Salary: 48000
+ID: 4, Name: kumar, Address: salam, Salary: 45
+
+📋 MENU:
+1. Insert Employee
+2. View All Employees
+3. Update Employee Salary
+4. Delete Employee
+5. Exit
+Choose an option: 3
+Enter Employee ID to update: 4
+Enter new salary: 30000
+✏️ 1 employee(s) updated.
+
+📋 MENU:
+1. Insert Employee
+2. View All Employees
+3. Update Employee Salary
+4. Delete Employee
+5. Exit
+Choose an option: 2
+
+📊 Employee Table:
+ID: 1, Name: Ravi, Address: Chennai, Salary: 45000
+ID: 2, Name: Priya, Address: Coimbatore, Salary: 52000
+ID: 3, Name: Arun, Address: Madurai, Salary: 48000
+ID: 4, Name: kumar, Address: salam, Salary: 30000
+
+📋 MENU:
+1. Insert Employee
+2. View All Employees
+3. Update Employee Salary
+4. Delete Employee
+5. Exit
+Choose an option: 4
+Enter Employee ID to delete: 4
+🗑️ 1 employee(s) deleted.
+
+📋 MENU:
+1. Insert Employee
+2. View All Employees
+3. Update Employee Salary
+4. Delete Employee
+5. Exit
+Choose an option: 2
+
+📊 Employee Table:
+ID: 1, Name: Ravi, Address: Chennai, Salary: 45000
+ID: 2, Name: Priya, Address: Coimbatore, Salary: 52000
+ID: 3, Name: Arun, Address: Madurai, Salary: 48000
+
+📋 MENU:
+1. Insert Employee
+2. View All Employees
+3. Update Employee Salary
+4. Delete Employee
+5. Exit
+Choose an option: 5
+👋 Connection closed. Exiting...*/
